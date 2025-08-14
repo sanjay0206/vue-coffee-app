@@ -117,7 +117,7 @@
 </template>
 
 <script setup>
-import { onMounted, onUnmounted, computed, ref } from "vue";
+import { onMounted, onUnmounted, computed, ref, watch } from "vue";
 import { Popover, PopoverButton, PopoverPanel } from "@headlessui/vue";
 import { ShoppingBagIcon, XMarkIcon } from "@heroicons/vue/24/outline";
 import { useRouter } from "vue-router";
@@ -208,5 +208,11 @@ onMounted(async () => {
 
 onUnmounted(() => {
   cleanupEventListeners();
+});
+
+watch(isSignedIn, async (newValue, oldValue) => {
+  if (newValue !== oldValue) {
+    await fetchCart();
+  }
 });
 </script>

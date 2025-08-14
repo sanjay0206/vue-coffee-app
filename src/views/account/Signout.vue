@@ -17,8 +17,6 @@ onMounted(async () => {
   // Dispatch logout action to clear Vuex store
   await store.dispatch("auth/logout");
 
-  localStorage.removeItem("localCart");
-
   router.push("/");
   showToast({ message: "You have been signed out", type: "success" });
 });

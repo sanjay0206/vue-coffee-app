@@ -29,6 +29,7 @@ const mutations = {
     state.isSignedIn = false;
     localStorage.removeItem("currentUser");
     localStorage.removeItem("isSignedIn");
+    localStorage.removeItem("localCart");
   },
 };
 

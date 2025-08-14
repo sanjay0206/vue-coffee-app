@@ -316,8 +316,6 @@ const deleteAccount = async () => {
       );
 
       await store.dispatch("auth/logout");
-      localStorage.removeItem("localCart");
-
       router.push("/");
 
       showToast({ message: "Account Terminated", type: "success" });
