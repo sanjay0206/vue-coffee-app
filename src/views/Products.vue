@@ -199,7 +199,6 @@ const activeFilters = computed({
   get: () => store.getters["products/filters"],
   set: (val) => store.commit("products/SET_FILTERS", val),
 });
-
 const executedSearchQuery = computed({
   get: () => store.getters["products/search"],
   set: (val) => store.commit("products/SET_SEARCH", val),

@@ -1,4 +1,4 @@
-// src/store/modules/auth.js
+import { mergeLocalCart } from "@app-utils/mergeCart";
 
 const state = {
   currentUser: JSON.parse(localStorage.getItem("currentUser")) || null,
@@ -45,9 +45,15 @@ const actions = {
       commit("CLEAR_AUTH");
     }
   },
-  login({ commit }, userData) {
+  async login({ commit }, userData) {
     commit("SET_CURRENT_USER", userData);
     commit("SET_SIGNED_IN", true);
+
+    try {
+      await mergeLocalCart(userData.id);
+    } catch (e) {
+      console.error("Cart merge failed:", e);
+    }
   },
   logout({ commit }) {
     commit("CLEAR_AUTH");
