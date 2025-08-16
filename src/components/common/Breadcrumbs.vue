@@ -27,37 +27,31 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { ArrowRightIcon, ArrowLeftIcon } from "@heroicons/vue/24/outline";
+import { ArrowLeftIcon } from "@heroicons/vue/24/outline";
 import axios from "axios";
-
-onMounted(async () => {
-  await fetchProducts();
-});
-
-const allProducts = ref([]);
-
-const fetchProducts = async () => {
-  try {
-    const response = await axios.get("http://localhost:8080/api/products");
-    allProducts.value = response.data.content;
-  } catch (error) {
-    console.error("Error fetching products:", error);
-  }
-};
 
 const route = useRoute();
 const router = useRouter();
 
-const product = computed(() => {
+const product = ref(null);
+
+onMounted(async () => {
   const productId = route.params.id;
-  return allProducts.value
-    ? allProducts.value.find((product) => product.id === productId)
-    : null;
+  if (productId) {
+    try {
+      const res = await axios.get(
+        `http://localhost:8080/api/products/${productId}`
+      );
+      product.value = res.data;
+    } catch (err) {
+      console.error("Failed to fetch product for breadcrumbs:", err);
+    }
+  }
 });
 
 const breadcrumbs = computed(() => {
   const pathArray = route.path.split("/").filter((p) => p);
-  const breadcrumbsArray = pathArray.map((path, index) => {
+  return pathArray.map((path, index) => {
     let name;
     let breadcrumbPath = "/" + pathArray.slice(0, index + 1).join("/");
 
@@ -69,9 +63,9 @@ const breadcrumbs = computed(() => {
     } else {
       name = path.charAt(0).toUpperCase() + path.slice(1).replace(/-/g, " ");
     }
-    return { path: breadcrumbPath, name: name };
+
+    return { path: breadcrumbPath, name };
   });
-  return breadcrumbsArray;
 });
 
 const goBack = () => {

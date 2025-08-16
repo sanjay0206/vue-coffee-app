@@ -61,22 +61,5 @@ const props = defineProps({
   noPrice: Boolean,
   minimalMode: Boolean,
   imageOnly: Boolean,
-  type: {
-    type: Number,
-    default: 1,
-  },
-  pageSize: {
-    type: Number,
-    default: 10,
-  },
 });
-
-// Watch specific props and log their values when they change
-watch(
-  () => [props.pageSize, props.type],
-  ([newPageSize, newType], [oldPageSize, oldType]) => {
-    console.log(`pageSize changed from ${oldPageSize} to ${newPageSize}`);
-    console.log(`type changed from ${oldType} to ${newType}`);
-  }
-);
 </script>

@@ -12,8 +12,6 @@
         v-for="(product, index) in products"
         :key="product.id"
         :product="product"
-        :page="props.page"
-        :page-size="props.pageSize"
         :class="[
           'transform transition duration-300 ease-in-out',
           { 'delay-${index * 300}ms': true },
@@ -25,36 +23,13 @@
 
 <script setup>
 import ProductCard from "@app-components/ProductCard.vue";
-import { watch } from "vue";
 
 const props = defineProps({
   products: {
     type: Array,
     required: true,
   },
-  page: {
-    type: Number,
-    default: 1,
-  },
-  pageSize: {
-    type: Number,
-    default: 10,
-  },
 });
-
-watch(
-  () => props.page,
-  (newVal, oldVal) => {
-    console.log(`Page changed from ${oldVal} to ${newVal}`);
-  }
-);
-
-watch(
-  () => props.pageSize,
-  (newVal, oldVal) => {
-    console.log(`Page size changed from ${oldVal} to ${newVal}`);
-  }
-);
 </script>
 
 <style>

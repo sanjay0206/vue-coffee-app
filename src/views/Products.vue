@@ -163,12 +163,7 @@
       />
 
       <!-- Product List -->
-      <ProductList
-        :products="products"
-        :page="currentPage"
-        :page-size="pageSize"
-        :loading="loading"
-      />
+      <ProductList :products="products" :loading="loading" />
 
       <!-- Pagination -->
       <div class="px-3 mt-6">
@@ -185,8 +180,8 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
-import axios from "axios";
+import { ref, computed, onMounted } from "vue";
+import { useStore } from "vuex";
 import {
   AdjustmentsHorizontalIcon,
   MagnifyingGlassIcon,
@@ -194,73 +189,70 @@ import {
 import ProductList from "@app-components/ProductList.vue";
 import ProductFilterModal from "@app-components/ProductFilterModal.vue";
 import Pagination from "@app-components/common/Pagination.vue";
+import axios from "axios";
 
-const props = defineProps({
-  searchTerm: {
-    type: String,
-    default: "",
-  },
-  page: {
-    type: Number,
-    default: 1,
-  },
-  pageSize: {
-    type: Number,
-    default: 10,
-  },
+const store = useStore();
+
+const currentPage = computed(() => store.getters["products/currentPage"]);
+const pageSize = computed(() => store.getters["products/pageSize"]);
+const activeFilters = computed({
+  get: () => store.getters["products/filters"],
+  set: (val) => store.commit("products/SET_FILTERS", val),
 });
 
-const openFilterModal = ref(false);
-const searchQuery = ref(props.searchTerm);
-const executedSearchQuery = ref(props.searchTerm);
-const loading = ref(false);
+const executedSearchQuery = computed({
+  get: () => store.getters["products/search"],
+  set: (val) => store.commit("products/SET_SEARCH", val),
+});
 
-const products = ref([]);
-const currentPage = ref(props.page);
-const pageSize = ref(props.pageSize);
 const totalItems = ref(0);
 const totalPages = ref(0);
 
-const activeFilters = ref({});
+const products = ref([]);
+const loading = ref(false);
+const searchQuery = ref("");
+const openFilterModal = ref(false);
 
-const hasActiveFilters = computed(() => {
-  return (
+const hasActiveFilters = computed(
+  () =>
     Object.keys(activeFilters.value).length > 0 ||
     executedSearchQuery.value !== ""
-  );
-});
+);
 
 const fetchProducts = async () => {
   try {
     loading.value = true;
 
+    // rebuild params fresh each time
     const params = {
       page: currentPage.value,
       size: pageSize.value,
     };
 
-    // Only add search parameter if there's a query
-    if (executedSearchQuery.value && executedSearchQuery.value.trim() !== "") {
+    if (executedSearchQuery.value?.trim()) {
       params.search = executedSearchQuery.value.trim();
     }
 
-    // Add active filters if any
     Object.entries(activeFilters.value).forEach(([key, values]) => {
       if (Array.isArray(values) && values.length > 0) {
         params[key] = values.join(",");
       }
     });
 
+    store.commit("products/SET_PARAMS", params);
+
     const response = await axios.get("http://localhost:8080/api/products", {
       params,
     });
 
-    products.value = response.data.content;
+    products.value = response.data.content || [];
     totalItems.value = response.data.totalElements;
     totalPages.value = response.data.totalPages;
-    currentPage.value = response.data.number + 1;
-  } catch (error) {
-    console.error("Error fetching products:", error);
+
+    store.commit("products/SET_PAGE", response.data.number + 1);
+  } catch (err) {
+    console.error("Error fetching products:", err);
+    products.value = [];
   } finally {
     loading.value = false;
   }
@@ -268,13 +260,21 @@ const fetchProducts = async () => {
 
 const handleSearch = () => {
   executedSearchQuery.value = searchQuery.value;
-  currentPage.value = 1;
+  store.commit("products/SET_PAGE", 1);
+  fetchProducts();
+};
+
+const clearSearch = () => {
+  searchQuery.value = "";
+  executedSearchQuery.value = "";
+  store.commit("products/SET_SEARCH", "");
+  store.commit("products/SET_PAGE", 1);
   fetchProducts();
 };
 
 const applyFilters = (filters) => {
   activeFilters.value = filters;
-  currentPage.value = 1;
+  store.commit("products/SET_PAGE", 1);
   fetchProducts();
 };
 
@@ -285,7 +285,7 @@ const removeFilter = (filter, value) => {
     delete newFilters[filter];
   }
   activeFilters.value = newFilters;
-  currentPage.value = 1;
+  store.commit("products/SET_PAGE", 1);
   fetchProducts();
 };
 
@@ -293,43 +293,17 @@ const clearAllFilters = () => {
   activeFilters.value = {};
   searchQuery.value = "";
   executedSearchQuery.value = "";
-  currentPage.value = 1;
-  fetchProducts();
-};
-
-const clearSearch = () => {
-  searchQuery.value = "";
-  executedSearchQuery.value = "";
-  currentPage.value = 1;
+  store.commit("products/SET_FILTERS", {});
+  store.commit("products/SET_SEARCH", "");
+  store.commit("products/SET_PAGE", 1);
+  store.commit("products/SET_PARAMS", {});
   fetchProducts();
 };
 
 const handlePageChange = (newPage) => {
-  currentPage.value = newPage;
+  store.commit("products/SET_PAGE", newPage);
   fetchProducts();
 };
-
-watch(
-  () => props.searchTerm,
-  (newVal) => {
-    searchQuery.value = newVal;
-    executedSearchQuery.value = newVal;
-  }
-);
-
-watch(
-  () => props.page,
-  (newVal) => {
-    currentPage.value = newVal;
-  }
-);
-
-watch(
-  () => props.pageSize,
-  (newVal) => {
-    pageSize.value = newVal;
-  }
-);
 
 onMounted(() => {
   fetchProducts();

@@ -257,7 +257,6 @@ const fetchCart = async () => {
       );
       cartProducts.value = response.data.items || [];
     } else {
-      // Use localStorage for guests
       const localCart = getLocalCart();
       cartProducts.value = localCart.items;
     }
@@ -342,7 +341,6 @@ const updateQuantity = (product) => {
       updateCartItem({ ...product, quantity: newQuantity }, newQuantity);
     });
   } else {
-    // For localStorage, we can directly update
     const localCart = getLocalCart();
     const item = localCart.items.find(
       (item) => item.productId === product.productId
