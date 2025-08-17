@@ -273,18 +273,15 @@ const removeFromWishlist = async () => {
     );
     const wishlist = response.data;
 
-    // Find the product in the wishlist
     const productToRemove = wishlist.items.find(
       (item) => item.productId === product.value.id
     );
 
     if (productToRemove) {
-      // Remove the product from the items array
       const updatedItems = wishlist.items.filter(
         (item) => item.productId !== product.value.id
       );
 
-      // Update the wishlist
       await axios.put(`http://localhost:8080/api/wishlists/${wishlist.id}`, {
         userId: currentUser.value.id,
         items: updatedItems,
@@ -368,7 +365,6 @@ const handleAddToCart = async () => {
       );
       cart.value = response.data;
     } else {
-      // Handle local storage cart
       const localCart = getLocalCart();
       const existingItem = localCart.items.find(
         (item) => item.productId === product.value.id
@@ -408,7 +404,6 @@ const updateCartItemQuantity = async (quantity) => {
       );
       cart.value = response.data;
     } else {
-      // Update local storage cart
       const localCart = getLocalCart();
       const item = localCart.items.find(
         (item) => item.productId === product.value.id
@@ -449,7 +444,6 @@ const removeFromCart = async () => {
         }
       }
     } else {
-      // Remove from local storage cart
       const localCart = getLocalCart();
       localCart.items = localCart.items.filter(
         (item) => item.productId !== product.value.id

@@ -1,4 +1,5 @@
 import axios from "axios";
+import eventBus from "@app-utils/eventBus";
 
 const LOCAL_STORAGE_CART_KEY = "localCart";
 
@@ -47,6 +48,8 @@ export const mergeLocalCart = async (userId) => {
         );
       }
     }
+
+    eventBus.emit("cart-updated");
 
     clearLocalCart();
   } catch (error) {
