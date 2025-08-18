@@ -42,7 +42,8 @@ const actions = {
       commit("SET_CURRENT_USER", user);
       commit("SET_SIGNED_IN", true);
     } else {
-      commit("CLEAR_AUTH");
+      commit("SET_CURRENT_USER", null);
+      commit("SET_SIGNED_IN", false);
     }
   },
   async login({ commit }, userData) {
