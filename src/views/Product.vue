@@ -184,6 +184,7 @@ import { HeartIcon, MinusIcon, PlusIcon } from "@heroicons/vue/24/outline";
 import ProductSwiper from "@app-components/ProductSwiper.vue";
 import Breadcrumbs from "@app-components/common/Breadcrumbs.vue";
 import { useToast } from "@app-utils/toastUtils.js";
+import { getLocalCart, setLocalCart } from "@app-utils/cartUtils";
 import eventBus from "@app-utils/eventBus";
 
 const route = useRoute();
@@ -191,7 +192,6 @@ const showToast = useToast();
 const store = useStore();
 
 const isProductInWishlist = ref(false);
-const LOCAL_STORAGE_CART_KEY = "localCart";
 const productIds = ref([]);
 const product = ref(null);
 const products = ref([]);
@@ -292,15 +292,6 @@ const removeFromWishlist = async () => {
   } catch (error) {
     throw error;
   }
-};
-
-const getLocalCart = () => {
-  const localCart = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
-  return localCart ? JSON.parse(localCart) : { items: [] };
-};
-
-const setLocalCart = (cartData) => {
-  localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(cartData));
 };
 
 const fetchProducts = async () => {

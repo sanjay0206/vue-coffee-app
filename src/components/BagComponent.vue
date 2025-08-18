@@ -124,6 +124,7 @@ import { useRouter } from "vue-router";
 import { useStore } from "vuex";
 import axios from "axios";
 import { useToast } from "@app-utils/toastUtils.js";
+import { getLocalCart, clearLocalCart } from "@app-utils/cartUtils";
 import eventBus from "@app-utils/eventBus";
 
 const router = useRouter();
@@ -132,17 +133,7 @@ const showToast = useToast();
 const isSignedIn = computed(() => store.getters["auth/isSignedIn"]);
 const currentUser = computed(() => store.getters["auth/currentUser"]);
 
-const LOCAL_STORAGE_CART_KEY = "localCart";
 const cartProducts = ref([]);
-
-const getLocalCart = () => {
-  const localCart = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
-  return localCart ? JSON.parse(localCart) : { items: [] };
-};
-
-const setLocalCart = (cartData) => {
-  localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(cartData));
-};
 
 const fetchCart = async () => {
   try {

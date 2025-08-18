@@ -1,11 +1,16 @@
 import axios from "axios";
 import eventBus from "@app-utils/eventBus";
 
-const LOCAL_STORAGE_CART_KEY = "localCart";
+export const LOCAL_STORAGE_CART_KEY = import.meta.env
+  .VITE_LOCAL_STORAGE_CART_KEY;
 
 export const getLocalCart = () => {
   const localCart = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
   return localCart ? JSON.parse(localCart) : { items: [] };
+};
+
+export const setLocalCart = (cartData) => {
+  localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(cartData));
 };
 
 export const clearLocalCart = () => {

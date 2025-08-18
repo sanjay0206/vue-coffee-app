@@ -1,4 +1,4 @@
-import { mergeLocalCart } from "@app-utils/mergeCart";
+import { mergeLocalCart } from "@app-utils/cartUtils";
 
 const state = {
   currentUser: JSON.parse(localStorage.getItem("currentUser")) || null,

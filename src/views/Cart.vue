@@ -227,9 +227,9 @@ import ProductSwiper from "@app-components/ProductSwiper.vue";
 import { useToast } from "@app-utils/toastUtils.js";
 import { useStore } from "vuex";
 import eventBus from "@app-utils/eventBus";
+import { getLocalCart, setLocalCart } from "@app-utils/cartUtils";
 import axios from "axios";
 
-const LOCAL_STORAGE_CART_KEY = "localCart";
 const showToast = useToast();
 const store = useStore();
 
@@ -239,15 +239,6 @@ const currentUser = computed(() => store.getters["auth/currentUser"]);
 const cartProducts = ref([]);
 const productIds = ref([]);
 const products = ref([]);
-
-const getLocalCart = () => {
-  const localCart = localStorage.getItem(LOCAL_STORAGE_CART_KEY);
-  return localCart ? JSON.parse(localCart) : { items: [] };
-};
-
-const setLocalCart = (cartData) => {
-  localStorage.setItem(LOCAL_STORAGE_CART_KEY, JSON.stringify(cartData));
-};
 
 const fetchCart = async () => {
   try {
